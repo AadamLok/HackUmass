@@ -1,25 +1,42 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { Image, StyleSheet, Text, View, SafeAreaView } from 'react-native';
+import React, { Component } from 'react';
+import { render } from 'react-dom';
+import { StyleSheet, Text, View } from 'react-native';
 
-export default function App() {
-  return (
-    <SafeAreaView style={styles.container}>
-      <Image style={styles.banner}
-        blurRadius = {7}
-        source = {{
-          top: 10,
-          width: 400,
-          height: 200,
-          uri: "https://cdn.pixabay.com/photo/2013/11/28/10/36/road-220058_1280.jpg",
-        }}
-      />
-      <Text style={styles.title}>Welcome to DriveSave!</Text>
-      <Text>Drive smart, drive safe, save lives. lmao</Text>
-      <StatusBar style="auto" />
-    </SafeAreaView>
-  );
+class App extends Component {
+  constructor() {
+    super();
+    this.state = { print: "Waiting."}
+  }
+
+  getMessage() {
+    return fetch('http://10.0.2.2:5000/')
+      .then((response) => response.json())
+      .then((json) => {
+        return json.status;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  async componentDidMount() {
+    let val = await this.getMessage();
+    this.setState({ print: val});
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <Text>{this.state.print}</Text>
+        <StatusBar style="auto" />
+      </View>
+    );
+  }
 }
+
+
+export default App;
 
 const styles = StyleSheet.create({
   container: {
