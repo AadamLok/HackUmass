@@ -8,14 +8,21 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 class Username extends Component {
+  constructor() {
+    super();
+    this.state = {user: ""};
+  }
   render() {
     return (
       <View style={{padding: 5}}>
         <TextInput
           style={{height: 40}}
           placeholder="Email"
-          onChangeText={text => setText(text)}
-          defaultValue={text}
+          onChangeText={text => {
+            this.props.parentCallback(text);
+            this.setState({user: text});
+          }}
+          defaultValue={this.state.user}
         />
         {/* <Text style={{padding: 10, fontSize: 42}}>
           {text.split(' ').map((word) => word && '').join(' ')}
@@ -29,6 +36,9 @@ class App extends Component {
   constructor() {
     super();
     this.state = { print: "Waiting.", username: ""};
+    this.userName = (user) => {
+      this.setState({username: user});
+    }
   }
 
   getMessage() {
@@ -84,8 +94,9 @@ class App extends Component {
         <Text style={styles.title}>Welcome to DriveSave!</Text>
         <Text>Drive smart, drive safe, save lives. lmao</Text>
         <StatusBar style="auto" />
-        <Username></Username>
-        <Password></Password>
+        <Username parentCallback={this.userName}></Username>
+        {//<Password></Password>
+        }
         <Button
           onPress={() => console.log("something")}
           title="Submit"
