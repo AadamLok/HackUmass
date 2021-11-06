@@ -45,4 +45,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  title: {
+    fontSize: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    
+  },
+  banner: {
+    flex: 0.2,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
