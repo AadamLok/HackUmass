@@ -30,37 +30,38 @@ class App extends Component {
   }
 
   Username() {
-  const [text, setText] = useState('');
-  return (
-    <View style={{padding: 5}}>
-      <TextInput
-        style={{height: 40}}
-        placeholder="Email"
-        onChangeText={text => setText(text)}
-        defaultValue={text}
-      />
-      {/* <Text style={{padding: 10, fontSize: 42}}>
-        {text.split(' ').map((word) => word && '').join(' ')}
-      </Text> */}
-    </View>
-  );
-}
+    const [text, setText] = useState('');
+    return (
+      <View style={{padding: 5}}>
+        <TextInput
+          style={{height: 40}}
+          placeholder="Email"
+          onChangeText={text => setText(text)}
+          defaultValue={text}
+        />
+        {/* <Text style={{padding: 10, fontSize: 42}}>
+          {text.split(' ').map((word) => word && '').join(' ')}
+        </Text> */}
+      </View>
+    );
+  }
+
   Password() {
-  const [text, setText] = useState('');
-  return (
-    <View style={{padding: 0}}>
-      <TextInput
-        style={{height: 40}}
-        placeholder="Password"
-        onChangeText={text => setText(text)}
-        defaultValue={text}
-      />
-      {/* <Text style={{padding: 10, fontSize: 42}}>
-        {text.split(' ').map((word) => word && '').join(' ')}
-      </Text> */}
-    </View>
-  );
-}
+    const [text, setText] = useState('');
+    return (
+      <View style={{padding: 0}}>
+        <TextInput
+          style={{height: 40}}
+          placeholder="Password"
+          onChangeText={text => setText(text)}
+          defaultValue={text}
+        />
+        {/* <Text style={{padding: 10, fontSize: 42}}>
+          {text.split(' ').map((word) => word && '').join(' ')}
+        </Text> */}
+      </View>
+    );
+  }
 
   render() {
     return (
