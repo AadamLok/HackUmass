@@ -98,7 +98,7 @@ class App extends Component {
         {//<Password></Password>
         }
         <Button
-          onPress={() => console.log("something")}
+          onPress={() => console.log(this.state.username)}
           title="Submit"
           color="#e0fa91"
           accessibilityLabel="Click this button to log in"
