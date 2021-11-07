@@ -3,31 +3,24 @@ import React, { Component } from 'react';
 import { useState } from 'react';
 import { render } from 'react-dom';
 import { ImageBackground, Button, TextInput, Image, StyleSheet, Text, View, SafeAreaView, Dimensions} from 'react-native';
-import Info from './pages/info';
-import Login from './pages/login';
-import Register from './pages/register';
-import Details from './pages/details';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as Font from 'expo-font';
 import AppLoading from 'expo-app-loading';
 
-// class SubmitButtons extends Component {
-//   constructor() {
+// class Score extends Component(score) {
+//   constructor(score) {
 //     super();
-//     this.state = {user: ""};
+//     this.score = score;
 //   }
 //   render() {
-//     return (class Title extends Component {
-//   state = {
-//     fontsLoaded: false,
-//   };
-
-
-//   render() {
-//       <View style={{padding: 5}}>
-        
+//     return (
+//     <View style={{flex: 0.3}}>
+//       <Text style={styles.title}>Your Score:</Text>
+//       <View style={{flex: 0.3}}>
+//         <Text style={styles.title}>{this.score}</Text>
 //       </View>
+//     </View>
 //     );
 //   }
 // }
@@ -35,10 +28,19 @@ let { width, height } = Dimensions.get('screen');
 width += 100;
 
 let customFonts = {
-  Montserrat: require('./assets/fonts/Montserrat-Regular.ttf')
+  Montserrat: require('../assets/fonts/Montserrat-Regular.ttf')
 };
 
-class Home extends Component {
+// class Greeting extends Component {
+//   render() {
+//     return <h1>{this.props.statement} I am feeling {this.props.expression} today!</h1>;
+//   }
+// }
+// const score = 'Happy';
+// <Greeting score='Hello' score={score}/> // statement and expression are the props (ie. arguments) we are passing to Greeting component
+
+
+class Info extends Component {
   constructor() {
     super();
     //this.navigation = {navigation};
@@ -74,23 +76,18 @@ class Home extends Component {
         /> */}
         <View style={{flex: 0.3}}>
             <View style={{flex: 0.3}}>
-              <Text style={styles.title}>DriveSave</Text>
+              <Text style={styles.title}>Your Score:</Text>
+              <View style={{flex: 1}}>
+                <Text style={{fontSize: 100, zIndex:10}}>7</Text>
+            </View>
             </View>
             {/* <Text style={styles.title}>Welcome to DriveSave!</Text>
             <Text>Drive smart, drive safe, save lives. lmao</Text> */}
             <StatusBar style="auto" />
             <View style={{flex: 0.2}}>
               <Button 
-                onPress={() => {this.props.navigation.navigate("Login");}}
-                title="Log In"
-                color="#8eb1bf"
-                accessibilityLabel="Click this button to go to the login page"
-              />
-            </View>
-            <View style={{flex: 0.2}}>
-              <Button 
-                onPress={() => {this.props.navigation.navigate("Register");}}
-                title="Register"
+                onPress={() => {this.props.navigation.navigate("Home");}}
+                title="More Info"
                 color="#8eb1bf"
                 accessibilityLabel="Click this button to go to the registration page"
               />
@@ -101,7 +98,7 @@ class Home extends Component {
   }
 } 
 
-class App extends Component {
+class Navinfo extends Component {
   constructor() {
     super();
     this.state = {fontsLoaded: false};
@@ -135,13 +132,7 @@ class App extends Component {
     if (this.state.fontsLoaded) {
     return (
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Details" 
-                  screenOptions={{
-                    headerShown: false
-                  }}
-        >
-          <Stack.Screen name="Details" component={Details} />
-          <Stack.Screen name="Info" component={Info} />
+        <Stack.Navigator>
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Register" component={Register} />
@@ -154,7 +145,7 @@ class App extends Component {
   }
 }
 
-export default App;
+export default Info;
 
 const styles = StyleSheet.create({
   container: {
