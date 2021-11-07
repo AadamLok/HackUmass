@@ -12,9 +12,9 @@ import {LineChart} from 'react-native-chart-kit'
 let { width, height } = Dimensions.get('screen');
 width += 100;
 
-let customFonts = {
-  Montserrat: require('../assets/fonts/Montserrat-Regular.ttf')
-};
+// let customFonts = {
+//   Montserrat: require('../assets/fonts/Montserrat-Regular.ttf')
+// };
 
 // class Greeting extends Component {
 //   render() {
@@ -164,6 +164,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 30,
+    paddingTop:15,
     fontFamily: 'Montserrat',
     alignItems: 'center',
     justifyContent: 'center',
