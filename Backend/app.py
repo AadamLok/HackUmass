@@ -22,141 +22,9 @@ app.config['MYSQL_DB'] = 'main'
 
 mysql.init_app(app)
 
-# Error handler
-class AuthError(Exception):
-    def __init__(self, error, status_code):
-        self.error = error
-        self.status_code = status_code
-
-@app.errorhandler(AuthError)
-def handle_auth_error(ex):
-    response = jsonify(ex.error)
-    response.status_code = ex.status_code
-    return response
-
-
-def get_token_auth_header():
-    """Obtains the Access Token from the Authorization Header
-    """
-    auth = request.headers.get("Authorization", None)
-    if not auth:
-        raise AuthError({"code": "authorization_header_missing",
-                        "description":
-                            "Authorization header is expected"}, 401)
-
-    parts = auth.split()
-
-    if parts[0].lower() != "bearer":
-        raise AuthError({"code": "invalid_header",
-                        "description":
-                            "Authorization header must start with"
-                            " Bearer"}, 401)
-    elif len(parts) == 1:
-        raise AuthError({"code": "invalid_header",
-                        "description": "Token not found"}, 401)
-    elif len(parts) > 2:
-        raise AuthError({"code": "invalid_header",
-                        "description":
-                            "Authorization header must be"
-                            " Bearer token"}, 401)
-
-    token = parts[1]
-    return token
-
-
-def requires_auth(f):
-    """Determines if the Access Token is valid
-    """
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = get_token_auth_header()
-        jsonurl = urlopen("https://"+AUTH0_DOMAIN+"/.well-known/jwks.json")
-        jwks = json.loads(jsonurl.read())
-        unverified_header = jwt.get_unverified_header(token)
-        rsa_key = {}
-        for key in jwks["keys"]:
-            if key["kid"] == unverified_header["kid"]:
-                rsa_key = {
-                    "kty": key["kty"],
-                    "kid": key["kid"],
-                    "use": key["use"],
-                    "n": key["n"],
-                    "e": key["e"]
-                }
-        if rsa_key:
-            try:
-                payload = jwt.decode(
-                    token,
-                    rsa_key,
-                    algorithms=ALGORITHMS,
-                    audience=API_AUDIENCE,
-                    issuer="https://"+AUTH0_DOMAIN+"/"
-                )
-            except jwt.ExpiredSignatureError:
-                raise AuthError({"code": "token_expired",
-                                "description": "token is expired"}, 401)
-            except jwt.JWTClaimsError:
-                raise AuthError({"code": "invalid_claims",
-                                "description":
-                                    "incorrect claims,"
-                                    "please check the audience and issuer"}, 401)
-            except Exception:
-                raise AuthError({"code": "invalid_header",
-                                "description":
-                                    "Unable to parse authentication"
-                                    " token."}, 401)
-
-            _request_ctx_stack.top.current_user = payload
-            return f(*args, **kwargs)
-        raise AuthError({"code": "invalid_header",
-                        "description": "Unable to find appropriate key"}, 401)
-    return decorated
-
-
-def requires_scope(required_scope):
-    """Determines if the required scope is present in the Access Token
-    Args:
-        required_scope (str): The scope required to access the resource
-    """
-    token = get_token_auth_header()
-    unverified_claims = jwt.get_unverified_claims(token)
-    if unverified_claims.get("scope"):
-            token_scopes = unverified_claims["scope"].split()
-            for token_scope in token_scopes:
-                if token_scope == required_scope:
-                    return True
-    return False
-
 @app.route("/")
 def status():
     return {'status': 'OK'}, 200
-
-@app.route("/api/public")
-@cross_origin(headers=["Content-Type", "Authorization"])
-def public():
-    response = "Hello from a public endpoint! You don't need to be authenticated to see this."
-    return jsonify(message=response)
-
-# This needs authentication
-@app.route("/api/private")
-@cross_origin(headers=["Content-Type", "Authorization"])
-@requires_auth
-def private():
-    response = "Hello from a private endpoint! You need to be authenticated to see this."
-    return jsonify(message=response)
-
-# This needs authorization
-@app.route("/api/private-scoped")
-@cross_origin(headers=["Content-Type", "Authorization"])
-@requires_auth
-def private_scoped():
-    if requires_scope("read:messages"):
-        response = "Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this."
-        return jsonify(message=response)
-    raise AuthError({
-        "code": "Unauthorized",
-        "description": "You don't have access to this resource"
-    }, 403)
 
 class deviceData():
     def __init__(self, device_id):
@@ -227,34 +95,71 @@ def get_points():
         cur.execute("SELECT * FROM device WHERE User=%s", (res["User"]))
         did =  cur.fetchall()[0][0]
         cur.execute("SELECT COUNT(*) FROM spikes WHERE DID=%s", (did))
-        ans = cur.fetchall()[0]
-        spikes = 0 if len(ans) == 0 else ans[0][0]
-        return {"spikes": spikes}
+        spikes = cur.fetchall()[0][0]
+        if spikes != 0:
+            cur.execute("SELECT num FROM spikes WHERE DID=%s FETCH NEXT 1 ROWS ONLY", (did))
+            data = cur.fetchall()[0]
+            cur.execute("DELETE FROM spikes WHERE num=%s",(data[0]))
+            mysql.connection().commit()
+        return {"spikes": spikes, "num": data[0]}
     except:
-        return {"status": 400, "reason": "MySQL query failed"}
+        return {"spikes": 0, "status": 400, "reason": "MySQL query failed"}
 
 @app.route("/get/graph", methods=['GET'])
 def get_data():
     res = request.get_json()
-    num = res['id']
+    num = res['num']
     try:
         cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM device WHERE User=%s", (res["User"]))
         did =  cur.fetchall()[0][0]
-        cur.execute("SELECT * FROM spikes WHERE DID=%s ORDER BY num ASC OFFSET %s ROWS FETCH NEXT 1 ROWS ONLY", (did, num))
+        cur.execute("SELECT * FROM spikes WHERE DID=%s AND num=%s", (did, num))
         values = cur.fetchall()[0]
-        cur.execute("SELECT num,Average FROM data WHERE DID=%s AND Time=%s")
+        cur.execute("SELECT num,Average FROM data WHERE DID=%s AND Time=%s", (did, values[3]))
         midRow = cur.fetchall()[0]
-        cur.execute("SELECT Time, Average FROM data WHERE DID=%s AND num < %s ORDER BY num DESC ")
+        cur.execute("SELECT Time, Average FROM data WHERE DID=%s AND num < %s ORDER BY num DESC", (did, values[3]))
         firstRows = cur.fetchmany(4)
-        cur.execute("SELECT Time, Average FROM data WHERE DID=%s AND num > %s ORDER BY num ASC ")
+        cur.execute("SELECT Time, Average FROM data WHERE DID=%s AND num > %s ORDER BY num ASC",(did, values[3]))
         lastRows = cur.fetchmany(4)
         data = []
         for row in firstRows + midRow + lastRows:
             data.append(row[3])
         return {"data": data, "reason": "Your were Breaking too hard" if values[2]==1 else "You suddenly accelerated", "time": values[1]}
     except:
-        return {"status": 400, "reason": "MySQL query failed"}
+        return {"data": [], "status": 400, "reason": "MySQL query failed"}
+
+@app.route("/register", methods=['POST'])
+def register():
+    res = request.get_json()
+    user = res['user']
+    password = res['password']
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM user WHERE username=%s", (user))
+        if len(cur.fetchall()) == 0:
+            cur.execute("INSERT INTO user VALUES (%s, %s)", (user, password))
+            mysql.connection.connect()
+        else:
+            return {"status": 500, "reason": "user name already exists"}
+    except:
+        return {"status": 400, "reason": "database error"}
+
+@app.route("/login", methods=['POST'])
+def log_in():
+    res = request.get_json()
+    user = res['user']
+    password = res['password']
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM user WHERE username=%s", (user))
+        data = cur.fetchall()
+        if len(data) == 1 and data[0]["password"] == password: 
+            return {"loggedIn": True}
+        else:
+            return {"loggedIn": False, "status": 500, "reason": "user name already exists"}
+    except:
+        return {"loggedIn": False, "status": 400, "reason": "database error"}
+
 
 if __name__ == '__main__':
     app.run(debug=True)
