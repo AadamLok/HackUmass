@@ -3,43 +3,91 @@ import React, { Component } from 'react';
 import { useState } from 'react';
 import { render } from 'react-dom';
 import { Button, TextInput, Image, StyleSheet, Text, View, SafeAreaView } from 'react-native';
+import Login from './pages/login';
+import Register from './pages/register';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-class Username extends Component {
+// class Username extends Component {
+//   constructor() {
+//     super();
+//     this.state = {user: ""};
+//   }
+//   render() {
+//     return (
+//       <View style={{padding: 5}}>
+//         <TextInput
+//           style={{height: 40}}
+//           placeholder="Email"
+//           onChangeText={text => {
+//             this.props.userCallback(text);
+//             this.setState({user: text});
+//           }}
+//           defaultValue={this.state.user}
+//         />
+//         {/* <Text style={{padding: 10, fontSize: 42}}>
+//           {text.split(' ').map((word) => word && '').join(' ')}
+//         </Text> */}
+//       </View>
+//     );
+//   }
+// }
+
+class Home extends Component {
   constructor() {
     super();
-    this.state = {user: ""};
+    //this.navigation = {navigation};
   }
   render() {
     return (
-      <View style={{padding: 5}}>
-        <TextInput
-          style={{height: 40}}
-          placeholder="Email"
-          onChangeText={text => {
-            this.props.parentCallback(text);
-            this.setState({user: text});
+      <SafeAreaView style={styles.container}>
+        <Image style={styles.banner}
+          blurRadius = {7}
+          source = {{
+            width: 400,
+            height: 200,
+            uri: "https://cdn.pixabay.com/photo/2013/11/28/10/36/road-220058_1280.jpg",
           }}
-          defaultValue={this.state.user}
         />
-        {/* <Text style={{padding: 10, fontSize: 42}}>
-          {text.split(' ').map((word) => word && '').join(' ')}
-        </Text> */}
-      </View>
+        <Text style={styles.title}>Welcome to DriveSave!</Text>
+        <Text>Drive smart, drive safe, save lives. lmao</Text>
+         <StatusBar style="auto" />
+        {//<Password></Password>
+        }
+        <Button
+          onPress={() => {this.props.navigation.navigate("Login");}}
+          title="Log In"
+          color="#8eb1bf"
+          accessibilityLabel="Click this button to go to the login page"
+        />
+        <Button
+          onPress={() => {this.props.navigation.navigate("Register");}}
+          title="Register"
+          color="#8eb1bf"
+          accessibilityLabel="Click this button to go to the registration page"
+        />
+        {/* <Text>Home Screen</Text>
+        <Button
+          title="Go to Details"
+          onPress={() => navigation.navigate('Details')}
+        /> */}
+      </SafeAreaView>
     );
   }
-}
+} 
 
 class App extends Component {
-  constructor() {
-    super();
-    this.state = { print: "Waiting.", username: ""};
-    this.userName = (user) => {
-      this.setState({username: user});
-    }
-  }
+  // constructor() {
+  //   super();
+  //   this.state = { print: "Waiting.", username: "", password: ""};
+  //   this.username = (user) => {
+  //     this.setState({username: user});
+  //   }
+  //   this.password = (pass) => {
+  //     this.setState({password: pass});
+  //   }
+  // }
 
   getMessage() {
     return fetch('http://10.0.2.2:5000/')
@@ -59,51 +107,17 @@ class App extends Component {
 
     //const [text, setText] = useState('');
 
-  Password() {
-    const [text, setText] = useState('');
-    return (
-      <View style={{padding: 0}}>
-        <TextInput
-          style={{height: 40}}
-          placeholder="Password"
-          onChangeText={text => setText(text)}
-          defaultValue={text}
-        />
-        {/* <Text style={{padding: 10, fontSize: 42}}>
-          {text.split(' ').map((word) => word && '').join(' ')}
-        </Text> */}
-      </View>
-    );
-  }
 
   render() {
+    const Stack = createNativeStackNavigator();
     return (
-      // <View style={styles.container}>
-      //   <Text>{this.state.print}</Text>
-      //   <StatusBar style="auto" />
-      // </View>
-      <SafeAreaView style={styles.container}>
-        <Image style={styles.banner}
-          blurRadius = {7}
-          source = {{
-            width: 400,
-            height: 200,
-            uri: "https://cdn.pixabay.com/photo/2013/11/28/10/36/road-220058_1280.jpg",
-          }}
-        />
-        <Text style={styles.title}>Welcome to DriveSave!</Text>
-        <Text>Drive smart, drive safe, save lives. lmao</Text>
-        <StatusBar style="auto" />
-        <Username parentCallback={this.userName}></Username>
-        {//<Password></Password>
-        }
-        <Button
-          onPress={() => console.log(this.state.username)}
-          title="Submit"
-          color="#e0fa91"
-          accessibilityLabel="Click this button to log in"
-        />
-      </SafeAreaView>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Home">
+          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Register" component={Register} />
+        </Stack.Navigator>
+      </NavigationContainer>
     );
   }
 }
