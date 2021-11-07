@@ -2,37 +2,39 @@ import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
 import { useState } from 'react';
 import { render } from 'react-dom';
-import { Button, TextInput, Image, StyleSheet, Text, View, SafeAreaView } from 'react-native';
+import { ImageBackground, Button, TextInput, Image, StyleSheet, Text, View, SafeAreaView, Dimensions} from 'react-native';
 import Login from './pages/login';
 import Register from './pages/register';
-
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import * as Font from 'expo-font';
+import AppLoading from 'expo-app-loading';
 
-// class Username extends Component {
+// class SubmitButtons extends Component {
 //   constructor() {
 //     super();
 //     this.state = {user: ""};
 //   }
 //   render() {
-//     return (
+//     return (class Title extends Component {
+//   state = {
+//     fontsLoaded: false,
+//   };
+
+
+//   render() {
 //       <View style={{padding: 5}}>
-//         <TextInput
-//           style={{height: 40}}
-//           placeholder="Email"
-//           onChangeText={text => {
-//             this.props.userCallback(text);
-//             this.setState({user: text});
-//           }}
-//           defaultValue={this.state.user}
-//         />
-//         {/* <Text style={{padding: 10, fontSize: 42}}>
-//           {text.split(' ').map((word) => word && '').join(' ')}
-//         </Text> */}
+        
 //       </View>
 //     );
 //   }
 // }
+let { width, height } = Dimensions.get('screen');
+width += 100;
+
+let customFonts = {
+  Montserrat: require('./assets/fonts/Montserrat-Regular.ttf')
+};
 
 class Home extends Component {
   constructor() {
@@ -40,28 +42,49 @@ class Home extends Component {
     //this.navigation = {navigation};
   }
   render() {
+    // const [loaded] = useFonts({
+    //   Montserrat: require('./assets/fonts/Montserrat-Regular.ttf'),
+    // });
     return (
       <SafeAreaView style={styles.container}>
-        <Image style={styles.banner}
+          <ImageBackground
+            style = {{ 
+              position: 'absolute',
+              flex: 1, 
+              height: height, width,
+              zIndex: 0 }}
+            blurRadius = {5}
+            source = {{
+              width: 400,
+              height: 200,
+              //uri: "https://publicdomainpictures.net/pictures/110000/nahled/asphalt-road-into-distance.jpg",
+              uri: "https://cdn.pixabay.com/photo/2013/11/28/10/36/road-220058_1280.jpg",
+            }
+          }
+          />
+        <View style={{flex: 0.5}}>
+
+        {/* <Image style={styles.banner}
           blurRadius = {7}
           source = {{
             width: 400,
             height: 200,
             uri: "https://cdn.pixabay.com/photo/2013/11/28/10/36/road-220058_1280.jpg",
           }}
-        />
-        <Text style={styles.title}>Welcome to DriveSave!</Text>
-        <Text>Drive smart, drive safe, save lives. lmao</Text>
+        /> */}
+        <Text style={styles.title}>DriveSave</Text>
+        {/* <Text style={styles.title}>Welcome to DriveSave!</Text>
+        <Text>Drive smart, drive safe, save lives. lmao</Text> */}
          <StatusBar style="auto" />
         {//<Password></Password>
         }
-        <Button
+        <Button style={styles.submitBut}
           onPress={() => {this.props.navigation.navigate("Login");}}
           title="Log In"
           color="#8eb1bf"
           accessibilityLabel="Click this button to go to the login page"
         />
-        <Button
+        <Button style={styles.submitBut}
           onPress={() => {this.props.navigation.navigate("Register");}}
           title="Register"
           color="#8eb1bf"
@@ -72,22 +95,17 @@ class Home extends Component {
           title="Go to Details"
           onPress={() => navigation.navigate('Details')}
         /> */}
+        </View>
       </SafeAreaView>
     );
   }
 } 
 
 class App extends Component {
-  // constructor() {
-  //   super();
-  //   this.state = { print: "Waiting.", username: "", password: ""};
-  //   this.username = (user) => {
-  //     this.setState({username: user});
-  //   }
-  //   this.password = (pass) => {
-  //     this.setState({password: pass});
-  //   }
-  // }
+  constructor() {
+    super();
+    this.state = {fontsLoaded: false};
+  }
 
   getMessage() {
     return fetch('http://10.0.2.2:5000/')
@@ -100,9 +118,14 @@ class App extends Component {
       });
   };
 
-  async componentDidMount() {
-    let val = await this.getMessage();
-    this.setState({ print: val});
+  async _loadFontsAsync() {
+    console.log("Here!!")
+    await Font.loadAsync(customFonts);
+    this.setState({ fontsLoaded: true });
+  }
+
+  componentDidMount() {
+    this._loadFontsAsync();
   }
 
     //const [text, setText] = useState('');
@@ -110,15 +133,23 @@ class App extends Component {
 
   render() {
     const Stack = createNativeStackNavigator();
+    if (this.state.fontsLoaded) {
     return (
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
+        <Stack.Navigator initialRouteName="Home" 
+                  screenOptions={{
+                    headerShown: false
+                  }}
+        >
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Register" component={Register} />
         </Stack.Navigator>
       </NavigationContainer>
     );
+    } else {
+      return <AppLoading />;
+    }
   }
 }
 
@@ -130,17 +161,29 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    //justifyContent: 'space-around'
   },
   title: {
     fontSize: 30,
+    fontFamily: 'Montserrat',
     alignItems: 'center',
     justifyContent: 'center',
     
   },
+  // Text: {
+  //   fontFamily: 'montserrat-regular',
+  // },
   banner: {
     flex: 0.2,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // submitBut: {
+  //   marginVertical:1000
+  // }
 });
+
+
+
+
