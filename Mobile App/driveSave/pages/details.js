@@ -27,29 +27,57 @@ let customFonts = {
 
 
 class Details extends Component {
-  state = {
-    info: [
-       {'time': '1', 'reason': "Breaked Too Fast!"},
-       {'time': '50', 'reason': "Sudden Acceleration!"},
-       {'time': '56', 'reason': "Breaked Too Fast!"},
-       {'time': '50', 'reason': "Sudden Acceleration!"},
-       {'time': '66', 'reason': "Breaked Too Fast!"},
-       {'time': '76', 'reason': "Breaked Too Fast!"},
-       {'time': '86', 'reason': "Breaked Too Fast!"},
-       {'time': '96', 'reason': "Breaked Too Fast!"},
-       {'time': '106', 'reason': "Breaked Too Fast!"},
-       {'time': '116', 'reason': "Breaked Too Fast!"},
-       {'time': '126', 'reason': "Breaked Too Fast!"},
-
-
-    ]
- }
-
   constructor() {
     super();
-    
+    this.state = {
+        reason: "All catched-up",
+        spikes: "",
+        num: 0,
+        time:"time",
+        data: [0,0,0,0,0,0,0,0,0,0]
+    };
     //this.navigation = {navigation};
   }
+
+  getNumSpike() {
+    fetch("http://127.0.0.1:5000/get/points", {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        user: this.state.username,
+      })
+    }).then((response) => response.json())
+    .then((data) => {
+      if(data.num > 0) {
+      fetch("http://127.0.0.1:5000/get/graph", {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user: this.state.username,
+          num: data.num
+        }).then((response) => response.json())
+        .then((json) => {
+          if(json.data.length != 0) {
+            this.setState({
+              reason: json.reason,
+              time: json.time,
+              spikes: data.spikes,
+              num: json.num,
+              data: json.data,
+            });
+          }
+        })
+      })
+    }
+    })
+  }
+
   render() {
     // const [loaded] = useFonts({
     //   Montserrat: require('./assets/fonts/Montserrat-Regular.ttf'),
@@ -72,116 +100,55 @@ class Details extends Component {
         }
         />
         <View style={{flex: 0.9}}>
-            <View style={{flex: 0.1}}>
+            <View style={{flex: 0.2}}>
               <Text style={styles.title}>More Details</Text>
             </View>
-            <View style={{flex: 0.5}}>
-          
-              <ScrollView style={{height:height-300, width: width*2/3}}>
-                {
-                    this.state.info.map((item, index) => (
-                      <View key = {item.time} style = {styles.item}>
-                        <View style={{flex: 0.1}}>
-                          <LineChart style={{flex: 0.1}}
-                            data={{
-                              labels: ['0', '1', '2', '3', '4', '5'],
-                              datasets: [{
-                                data: [
-                                  Math.random() * 100,
-                                  Math.random() * 100,
-                                  Math.random() * 100,
-                                  Math.random() * 100,
-                                  Math.random() * 100,
-                                  Math.random() * 100
-                                ]
-                              }]
-                            }}
-                            width={Dimensions.get('window').width*2/3} // from react-native
-                            height={100}
-                            chartConfig={{
-                              backgroundColor: '#8eb1bf',
-                              backgroundGradientFrom: '#8eb1bf',
-                              backgroundGradientTo: '#bfedff',
-                              //backgroundGradientTo: '#ffa726',
-                              decimalPlaces: 2, // optional, defaults to 2dp
-                              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                              style: {
-                                borderRadius: 16
-                              }
-                            }}
-                            bezier
-                            style={{
-                              marginVertical: 8,
-                              borderRadius: 16
-                            }}
-                          />
-                        </View>
-                        <View style={{flex: 0.1}}>
-                          <Text style={{fontSize:20}}>{item.time}:00: {item.reason}</Text>
-                        </View>
-                      </View>
-                    ))
-                }
-              </ScrollView>
+            <View style={{flex: 1}}>
+              <View style = {styles.item}>
+                <View>
+                <LineChart
+                  data={{
+                    datasets:[{
+                      data: this.state.data
+                    }]
+                  }}
+                  width={Dimensions.get('window').width*7/9} // from react-native
+                  height={Dimensions.get('window').height*4/9}
+                  chartConfig={{
+                    backgroundColor: '#8eb1bf',
+                    backgroundGradientFrom: '#8eb1bf',
+                    backgroundGradientTo: '#bfedff',
+                    //backgroundGradientTo: '#ffa726',
+                    decimalPlaces: 2, // optional, defaults to 2dp
+                    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                    style: {
+                      borderRadius: 16,
+                    }
+                  }}
+                  bezier
+                  style={{
+                    marginVertical: 8,
+                    borderRadius: 16
+                  }}
+                />
+                </View>
+                <View style={{flexDirection:'column'}}>
+                  <Text style={{fontSize:20, flex:1, textAlign: 'center'}}>{this.state.time}</Text>
+                  <Text style={{fontSize:20, flex:1, textAlign: 'center'}}>{this.state.reason}</Text>
+                </View>
+              </View>
           </View>
-              <View style={{flex: 0.2}}>
+              <View style={{flex: 0.1}}>
               <Button 
-                onPress={() => {this.props.navigation.navigate("Home");}}
-                title="Back"
+                onPress={() => {this.getNumSpike();}}
+                title="Okay got it, Next"
                 color="#8eb1bf"
-                accessibilityLabel="Click this button to go to the registration page"
+                style={styles.button}
               />
             </View>
         </View>
       </SafeAreaView>
     );
-  }
-} 
-
-class NavDetails extends Component {
-  constructor() {
-    super();
-    this.state = {fontsLoaded: false};
-  }
-
-  getMessage() {
-    return fetch('http://10.0.2.2:5000/')
-      .then((response) => response.json())
-      .then((json) => {
-        return json.status;
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  async _loadFontsAsync() {
-    await Font.loadAsync(customFonts);
-    this.setState({ fontsLoaded: true });
-  }
-
-  componentDidMount() {
-    this._loadFontsAsync();
-  }
-
-    //const [text, setText] = useState('');
-
-
-  render() {
-    const Stack = createNativeStackNavigator();
-    if (this.state.fontsLoaded) {
-    return (
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="Register" component={Register} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    );
-    } else {
-      return <AppLoading />;
-    }
   }
 }
 
@@ -200,10 +167,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat',
     alignItems: 'center',
     justifyContent: 'center',
-    
+    padding: 10,
+    marginLeft: 20,
   },
   item: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 30,
@@ -211,8 +179,7 @@ const styles = StyleSheet.create({
     height: height/4,
     fontFamily: 'Montserrat',
     //borderWidth: 3,
-    backgroundColor: 'rgba(.6, .4, .2, 0.4)',
- }
+ },
 });
 
 
