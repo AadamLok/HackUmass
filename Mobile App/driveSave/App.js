@@ -140,11 +140,11 @@ class App extends Component {
                     headerShown: false
                   }}
         >
-          <Stack.Screen name="Details" component={Details} />
-          <Stack.Screen name="Info" component={Info} />
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Register" component={Register} />
+          <Stack.Screen name="Details" component={Details} />
+          <Stack.Screen name="Info" component={Info} />
         </Stack.Navigator>
       </NavigationContainer>
     );

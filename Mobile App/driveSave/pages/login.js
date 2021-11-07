@@ -77,20 +77,29 @@ class Login extends Component {
     }
   }
 
-  getMessage() {
-    return fetch('http://10.0.2.2:5000/')
-      .then((response) => response.json())
-      .then((json) => {
-        return json.status;
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
   async componentDidMount() {
     let val = await this.getMessage();
     this.setState({ print: val});
+  }
+
+  tryLogIn() {
+    fetch("http://127.0.0.1:5000/login", {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        user: this.state.username,
+        password: this.state.password
+      }).then((response) => response.json())
+      .then((json) => json.loggedIn)
+      .then((login) => {
+        if(login){
+          this.props.navigation.navigate("Home");
+        }
+      })
+    });
   }
 
   render() {
@@ -137,7 +146,7 @@ class Login extends Component {
           accessibilityLabel="Click this button to log in"
         />
         <Button
-          onPress={() => {this.props.navigation.navigate("Home");}}
+          onPress={() => {this.tryLogIn();}}
           title="Back"
           color="#8eb1bf"
           accessibilityLabel="Leave login"
