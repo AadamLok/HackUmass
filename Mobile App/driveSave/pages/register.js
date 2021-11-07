@@ -87,24 +87,6 @@ class Register extends Component {
 
     //const [text, setText] = useState('');
 
-  Password() {
-    const [text, setText] = useState('');
-    return (
-      <View style={{padding: 0}}>
-        <TextInput
-          style={{height: 40}}
-          placeholder="Password"
-          onChangeText={text => setText(text)}
-          defaultValue={text}
-          secureTextEntry
-        />
-        {/* <Text style={{padding: 10, fontSize: 42}}>
-          {text.split(' ').map((word) => word && '').join(' ')}
-        </Text> */}
-      </View>
-    );
-  }
-
   render() {
     return (
       // <View style={styles.container}>
