@@ -2,18 +2,10 @@ import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
 import { useState } from 'react';
 import { render } from 'react-dom';
-import { ScrollView, ImageBackground, Button, TextInput, Image, StyleSheet, Text, View, SafeAreaView, Dimensions} from 'react-native';
+import { Button, TextInput, Image, StyleSheet, Text, View, SafeAreaView } from 'react-native';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import * as Font from 'expo-font';
-import AppLoading from 'expo-app-loading';
-
-let { width, height } = Dimensions.get('screen');
-width += 100;
-
-// let customFonts = {
-//   Montserrat: require('../assets/fonts/Montserrat-Regular.ttf')
-// };
 
 class Username extends Component {
   constructor() {
@@ -93,67 +85,46 @@ class Register extends Component {
     this.setState({ print: val});
   }
 
+    //const [text, setText] = useState('');
+
   render() {
-    // const [loaded] = useFonts({
-    //   Montserrat: require('./assets/fonts/Montserrat-Regular.ttf'),
-    // });
     return (
+      // <View style={styles.container}>
+      //   <Text>{this.state.print}</Text>
+      //   <StatusBar style="auto" />
+      // </View>
       <SafeAreaView style={styles.container}>
-        <ImageBackground
-          style = {{ 
-            position: 'absolute',
-            flex: 1, 
-            height: height, width,
-            zIndex: 0 }}
-          blurRadius = {5}
+        <Image style={styles.banner}
+          blurRadius = {7}
           source = {{
             width: 400,
             height: 200,
-            //uri: "https://publicdomainpictures.net/pictures/110000/nahled/asphalt-road-into-distance.jpg",
             uri: "https://cdn.pixabay.com/photo/2013/11/28/10/36/road-220058_1280.jpg",
-          }
-        }
+          }}
         />
-         {/* <Image style={styles.banner}
-          source = {
-            require("assets/icon.png/")
-            // width: 200,
-            // height: 200,
-            // uri: "https://i.ibb.co/grnKX93/icon.png",
-          }
-        /> */}
-        <View style={{flex: .8, paddingTop: 80, alignItems: 'center', justifyContent: 'center'}}>
         <Text style={styles.title}>Welcome to DriveSave!</Text>
-        <Text style={{paddingBottom: 20}}>Drive smart, drive safe, save lives.</Text>
+        <Text>Drive smart, drive safe, save lives. lmao</Text>
         <StatusBar style="auto" />
-        <View style={{flex: 0.4, paddingTop: 20, alignItems: 'center', justifyContent: 'center'}}>
         <Username userCallback={this.username}></Username>
         <Password passCallback={this.password}></Password>
-        </View>
-        
-          <View style={{width:width/3, flex: 0.15}}>
-            <Button
-              onPress={() => {console.log(this.state.username); console.log(this.state.password);}}
-              title="Submit"
-              color="#8eb1bf"
-              //"#8eb1bf", "#a2cbdb", "#7eb2c3", "#50a3df"
-              accessibilityLabel="Click this button to log in"
-            />
-          </View>
-          <View style={{width:width/3, flex: 0.15}}>
-            <Button
-              onPress={() => {this.props.navigation.navigate("Home");}}
-              title="Back"
-              color="#8eb1bf"
-              accessibilityLabel="Leave Register"
-            />
-          </View>
-        </View>
+        {//<Password></Password>
+        }
+        <Button
+          onPress={() => {console.log(this.state.username); console.log(this.state.password);}}
+          title="Submit"
+          color="#8eb1bf"
+          accessibilityLabel="Click this button to submit account registering info"
+        />
+        <Button
+          onPress={() => {this.props.navigation.navigate("Home");}}
+          title="Back"
+          color="#8eb1bf"
+          accessibilityLabel="Leave page"
+        />
       </SafeAreaView>
     );
   }
-} 
-
+}
 
 export default Register;
 
@@ -163,29 +134,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    //justifyContent: 'space-around'
   },
   title: {
     fontSize: 30,
-    fontFamily: 'Montserrat',
     alignItems: 'center',
     justifyContent: 'center',
     
   },
-  // Text: {
-  //   fontFamily: 'montserrat-regular',
-  // },
   banner: {
     flex: 0.2,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  submitBut: {
-    flex: 0.4,
-  }
 });
-
-
-
-

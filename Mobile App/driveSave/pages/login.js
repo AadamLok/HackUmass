@@ -11,9 +11,9 @@ import AppLoading from 'expo-app-loading';
 let { width, height } = Dimensions.get('screen');
 width += 100;
 
-let customFonts = {
-  Montserrat: require('../assets/fonts/Montserrat-Regular.ttf')
-};
+// let customFonts = {
+//   Montserrat: require('../assets/fonts/Montserrat-Regular.ttf')
+// };
 
 class Username extends Component {
   constructor() {
@@ -122,26 +122,33 @@ class Login extends Component {
             // uri: "https://i.ibb.co/grnKX93/icon.png",
           }
         /> */}
+        <View style={{flex: .8, paddingTop: 80, alignItems: 'center', justifyContent: 'center'}}>
         <Text style={styles.title}>Welcome to DriveSave!</Text>
-        <Text>Drive smart, drive safe, save lives. lmao</Text>
+        <Text style={{paddingBottom: 20}}>Drive smart, drive safe, save lives.</Text>
         <StatusBar style="auto" />
+        <View style={{flex: 0.4, paddingTop: 20, alignItems: 'center', justifyContent: 'center'}}>
         <Username userCallback={this.username}></Username>
         <Password passCallback={this.password}></Password>
-        {//<Password></Password>
-        }
-        <Button
-          onPress={() => {console.log(this.state.username); console.log(this.state.password);}}
-          title="Submit"
-          color="#8eb1bf"
-          //"#8eb1bf", "#a2cbdb", "#7eb2c3", "#50a3df"
-          accessibilityLabel="Click this button to log in"
-        />
-        <Button
-          onPress={() => {this.props.navigation.navigate("Home");}}
-          title="Back"
-          color="#8eb1bf"
-          accessibilityLabel="Leave login"
-        />
+        </View>
+        
+          <View style={{width:width/3, flex: 0.15}}>
+            <Button
+              onPress={() => {console.log(this.state.username); console.log(this.state.password);}}
+              title="Submit"
+              color="#8eb1bf"
+              //"#8eb1bf", "#a2cbdb", "#7eb2c3", "#50a3df"
+              accessibilityLabel="Click this button to log in"
+            />
+          </View>
+          <View style={{width:width/3, flex: 0.15}}>
+            <Button
+              onPress={() => {this.props.navigation.navigate("Home");}}
+              title="Back"
+              color="#8eb1bf"
+              accessibilityLabel="Leave login"
+            />
+          </View>
+        </View>
       </SafeAreaView>
     );
   }

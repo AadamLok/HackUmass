@@ -12,9 +12,9 @@ import {LineChart} from 'react-native-chart-kit'
 let { width, height } = Dimensions.get('screen');
 width += 100;
 
-let customFonts = {
-  Montserrat: require('../assets/fonts/Montserrat-Regular.ttf')
-};
+// let customFonts = {
+//   Montserrat: require('../assets/fonts/Montserrat-Regular.ttf')
+// };
 
 // class Greeting extends Component {
 //   render() {
@@ -75,12 +75,16 @@ class Details extends Component {
             <View style={{flex: 0.1}}>
               <Text style={styles.title}>More Details</Text>
             </View>
-            <View style={{flex: 0.5}}>
+            <View style={{flex: 0.6, paddingTop:40, }}>
           
-              <ScrollView style={{height:height-300, width: width*2/3}}>
+              <ScrollView style={{height:height-200, width: width*2/3}}  >
+                {/* //style={{height:height-300, width: width*2/3}} */}
                 {
                     this.state.info.map((item, index) => (
-                      <View key = {item.time} style = {styles.item}>
+                      <View key = {item.time} style = {styles.item, {height:height/4, width: width*2/3}}>
+                        <View style={{flex: 0.13}}>
+                          <Text style={{fontSize:20, fontFamily: 'Montserrat',}}>{item.time}:00: {item.reason}</Text>
+                        </View>
                         <View style={{flex: 0.1}}>
                           <LineChart style={{flex: 0.1}}
                             data={{
@@ -116,9 +120,7 @@ class Details extends Component {
                             }}
                           />
                         </View>
-                        <View style={{flex: 0.1}}>
-                          <Text style={{fontSize:20}}>{item.time}:00: {item.reason}</Text>
-                        </View>
+                        
                       </View>
                     ))
                 }
@@ -197,13 +199,15 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 30,
+    paddingTop:15,
     fontFamily: 'Montserrat',
     alignItems: 'center',
     justifyContent: 'center',
     
   },
   item: {
-    flexDirection: 'row',
+    //flexDirection: 'row',
+
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 30,
