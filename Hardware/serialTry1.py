@@ -1,4 +1,7 @@
 import serial
+import time
+import requests
+import datetime
 
 ser = serial.Serial('/dev/cu.usbmodem141101')
 
@@ -9,7 +12,12 @@ while True:
     if curByte == " ":
         tenBytes += [compByte]
         if len(tenBytes) == 10:
-            print(tenBytes) #add post req
+            r = requests.post('url', json={
+            "first": True,
+            "continue": True,
+            "data": tenBytes,
+            "time": datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+            })
             tenBytes = []
         compByte = ""
     else:
