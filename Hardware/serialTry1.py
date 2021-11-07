@@ -12,7 +12,7 @@ while True:
     if curByte == " ":
         tenBytes += [compByte]
         if len(tenBytes) == 10:
-            r = requests.post('url', json={
+            r = requests.post('http://127.0.0.1:5000/send/100', json={
             "first": True,
             "continue": True,
             "data": tenBytes,
